@@ -1,3 +1,9 @@
+import Model.Person;
+import Service.PersonValidator;
+import excptions.PersonIdInvalidException;
+import excptions.PersonNameTooShortExcpetion;
+import excptions.PersonPhoneInvalidException;
+import excptions.PersonShouldNotBeUnderEighteenException;
 import org.apache.commons.csv.*;
 
 import java.io.FileReader;
@@ -5,7 +11,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSVReader {
+public class Client {
 
     public static void main(String[] args) {
         try (Reader in = new FileReader("src/main/resources/persons.csv")) {
@@ -15,13 +21,24 @@ public class CSVReader {
             PersonValidator personValidatior = new PersonValidator();
 
             for (CSVRecord record : records) {
-                int id = Integer.parseInt(record.get("id"));
-                String name = record.get("name");
-                int age = Integer.parseInt(record.get("age"));
-                String phone = record.get("phone");
-                Person personRed = new Person(id, name, age,phone);
-                personValidatior.isValid(personRed);
-                people.add(personRed);
+
+                Person personRed = Person.fromRecord(record);
+
+                try {
+                    personValidatior.isValid(personRed);
+                    people.add(personRed);
+                } catch (PersonIdInvalidException e) {
+                    System.out.println((e.getClass().getName()) + " : person id should be valid");
+
+                } catch (PersonNameTooShortExcpetion e) {
+                    System.out.println((e.getClass().getName()) + " : person name should not be to short");
+
+                } catch (PersonPhoneInvalidException e) {
+                    System.out.println((e.getClass().getName()) + " : person phone should be valid");
+
+                } catch (PersonShouldNotBeUnderEighteenException e) {
+                    System.out.println((e.getClass().getName()) + " : person should not be under 18");
+                }
             }
 
             // Now 'people' contains the data from the CSV file
@@ -32,5 +49,6 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
+
 
 }

@@ -1,3 +1,7 @@
+package Model;
+
+import org.apache.commons.csv.CSVRecord;
+
 public class Person {
     private int id;
     private String name;
@@ -49,11 +53,19 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
+        return "Model.Person{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 ", phone='" + phone + '\'' +
                 '}';
+    }
+
+    public static Person fromRecord(CSVRecord record) {
+        int id = Integer.parseInt(record.get("id"));
+        String name = record.get("name");
+        int age = Integer.parseInt(record.get("age"));
+        String phone = record.get("phone");
+        return new Person(id, name, age, phone);
     }
 }
